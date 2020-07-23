@@ -1,0 +1,11 @@
+{
+    "autoload": {
+        "psr-4": {
+            "SessionSync\\": "src"
+        }
+    },
+    "require": {
+        "cboden/ratchet": "^0.4.3",
+        "guzzlehttp/guzzle": "7.0"
+    }
+}
