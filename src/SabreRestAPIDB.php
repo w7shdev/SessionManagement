@@ -34,7 +34,7 @@ class SabreRestAPIDB  {
      */
     private function up(){ 
         try { 
-            $this->query = new Mysqli('localhost' , 'root' , '' , 'session');
+            $this->query = new \Mysqli('localhost' , 'root' , '' , 'session');
             $this->connection_state = TRUE; 
         }catch(mysqli_sql_exception $e) {
             throw $e; 
@@ -72,17 +72,25 @@ class SabreRestAPIDB  {
     }
 
     /**
-     * Getting the token that are under a week 
+     * get the rows of the valid Sabre session 
+     * 
+     * @return mixed array | table rows 
      */
-    public function get_token_under_week() { 
-        //  SELECT UNIX_TIMESTAMP(SYSDATE())+604800 as timestamptoday 
-        //, (SELECT FROM_UNIXTIME(timestamptoday)) as fromToday
+    public function get_valid_tokens() { 
+        
+        $result = []; 
 
-        # SQL 
-        # SELECT * FROM session 
-        # WHERE created_at < FROM_UNIXTIME((SELECT UNIX_TIMESTAMP(SYSDATE()) + expire_in))
+        if($this->connection_state) {
+            $query = $this->query->query("SELECT * FROM valid_session"); 
+            // get the values 
+            while($row = $query->fetch_assoc()){ 
+                $result[] = $row; 
+            }
+        }
 
+        return $result;
     }
+
 
     public function __distruct() { 
         $this->down(); 

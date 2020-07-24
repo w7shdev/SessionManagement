@@ -2,9 +2,24 @@
 namespace SessionSync; 
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request;
+use SessionSync\SabreRestAPIDB; 
 class SabreRestAPI { 
 
+
+
+    /**
+     * HTTP REQUEST Holder
+     */
+    private $client; 
+
+    /**
+     * CERT REST API Endpoint 
+     */
     private $apiEndPoint = "https://api-crt.cert.havail.sabre.com"; 
+    /**
+     * assigned token from the webSocket
+     */
+    private $access_token; 
 
     /**
      * user Secret to get the sessionless token
@@ -13,14 +28,55 @@ class SabreRestAPI {
     private $userScert = ''; 
 
     public function __construct(){ 
-       var_dump( $this->parse_token() );
+        $this->client = new Client(['base_uri' => $this->apiEndPoint]); 
     }
 
-
-    public function parse_token() { 
-        return json_decode($this->request_token());
+    /**
+     * get the the valid token for the request 
+     * from the DB not from the SABRE API directly 
+     * This is help to maintain the Token management 
+     * so that we do not need to ask for a token each
+     * @param string $token access token if websocket is envolve 
+     * @return string Sabre access token
+     */
+    public function get_token(){
+        $db = new SabreRestAPIDB(); 
+        $valid_token = $db->get_valid_tokens(); 
+        return $valid_token[0]['session_token']; 
     }
-    
+
+    /**
+     * Setter for access token 
+     * this is for websocket to control the opened 
+     * sessions
+     * @return string token session
+     */
+    public function set_access_token($token) { 
+        $this->access_token = $token; 
+    }
+    /**
+     * HEADER for the request once the authentication 
+     * token is fetched! 
+     * @return Array  HTTP header for Sabre request 
+     */
+    private function request_header(){
+        $token = (!is_null($this->access_token)) 
+            ? $this->access_token
+            : $this->get_token(); 
+
+        return [
+            'content-type' => 'application/json',
+            'accept' => 'application/json',
+            'authorization' => "Bearer {$token}",
+            'Application-ID' => '',
+        ]; 
+
+    }
+
+    /**
+     * Request Sabre for authorization token 
+     * @return mixed  Sabre response 
+     */
     private function request_token(){ 
 
         $clinet = new Client(['base_uri' => $this->apiEndPoint]); 
@@ -32,7 +88,7 @@ class SabreRestAPI {
         //set the body
         $body = json_encode('grant_type=client_credentials');
         
-        $request = $clinet->request('POST', 'v2/auth/token', [
+        $request = $this->clinet->request('POST', 'v2/auth/token', [
             'headers' => $headerRequest, 
             'body'=> 'grant_type=client_credentials'
         ]);
@@ -41,8 +97,24 @@ class SabreRestAPI {
         return $request->getBody()->getContents(); 
     }
 
+    /**
+     * Sabre response to get the hotel avail 
+     * @param string $http_header type of HTTP request
+     * @param string $route PATH of the API requst 
+     * @param Array $request_body request body of Sabre API 
+     * @return mix Sabre response 
+    */ 
+    public function fetch_hotel($http_header, $route , $request_body) { 
+
+        $request = $this->client->request($http_header , $route,[
+            'headers' => $this->request_header(), 
+            'body' => json_encode($request_body)
+        ]); 
+
+        return $request; 
+    }
+
 
 
 }
 
-// new SabreRestAPI(); 
