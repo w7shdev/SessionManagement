@@ -1,122 +1,110 @@
 let hotelButton = document.querySelector("#getHotelBtn");
-let responseBlock =  document.querySelector('#response_block'); 
-let hotelListDOM = document.querySelector('.hotelList'); 
-
+let responseBlock = document.querySelector("#response_block");
+let hotelListDOM = document.querySelector(".hotelList");
 
 /**
- * 
- * @param {array} $data hotel object of rhe response 
- *                 
+ *
+ * @param {array} $data hotel object of rhe response
+ *
  */
-function display_result($data) { 
-    // create a DOM 
-    $data  = $data || {}; 
+function display_result($data) {
+  // create a DOM
+  $data = $data || {};
 
-    //Hide the block first  
-    responseBlock.classList.remove('d-none');
+  //Hide the block first
+  responseBlock.classList.remove("d-none");
 
-    let hotelList  = fetch_hotel_list(localStorage.getItem('result')); 
-  
-    console.log(`Total hotel list is ${hotelList.length}`); 
+  let hotelList = fetch_hotel_list(localStorage.getItem("result"));
 
-    
-    /**
-     * if there is a responses then 
-     * we need to empty the array for the 
-     * new response 
-     */ 
-    
-    if( responsesDOM.length > 0 )
-      responsesDOM = []; 
+  /**
+   * if there is a responses then
+   * we need to empty the array for the
+   * new response
+   */
 
-    hotelList.map( hotel => {
-        _prepare_list(hotel.HotelInfo);  
-    }); 
+  if (responsesDOM.length > 0) responsesDOM = [];
 
-    let content  = responsesDOM.map((el) => el.innerHTML); 
+  hotelList.map((hotel) => {
+    _prepare_list(hotel.HotelInfo);
+  });
 
-    responseBlock.innerHTML =content.join(' '); 
+  let content = responsesDOM.map((el) => el.innerHTML);
+
+  responseBlock.innerHTML = content.join(" ");
 }
 
-
-
-let responsesDOM = []; 
+let responsesDOM = [];
 /**
- * 
- * @param {object} $data HotelInfo object from a sabre response 
- * @returns void 
+ *
+ * @param {object} $data HotelInfo object from a sabre response
+ * @returns void
  */
-function _prepare_list($data) { 
-    let $el = hotelListDOM.cloneNode(true); 
-    $el.querySelector('#hotel_title').innerHTML = $data.HotelName; 
-    $el.querySelector("#sabre_rate").innerHTML = 'Rate ' +$data.SabreRating; 
-    $el.querySelector("#address_line").innerHTML = $data.LocationInfo.Address.AddressLine1;
+function _prepare_list($data) {
+  let $el = hotelListDOM.cloneNode(true);
+  $el.querySelector("#hotel_title").innerHTML = $data.HotelName;
+  $el.querySelector("#sabre_rate").innerHTML = "Rate " + $data.SabreRating;
+  $el.querySelector("#address_line").innerHTML =
+    $data.LocationInfo.Address.AddressLine1;
 
-    $el.querySelector('#hotel_logo').setAttribute('src', $data.Logo) ; 
-    let origin  = [
-        $data.LocationInfo.Address.CityName.value, 
-        $data.LocationInfo.Address.CountryName.value
-    ]; 
+  $el.querySelector("#hotel_logo").setAttribute("src", $data.Logo);
+  let origin = [
+    $data.LocationInfo.Address.CityName.value,
+    $data.LocationInfo.Address.CountryName.value,
+  ];
 
-    $el.querySelector("#origin").innerHTML = origin.join(' , '); 
+  $el.querySelector("#origin").innerHTML = origin.join(" , ");
 
-    
-    
-    let listItem;
+  let listItem;
 
-    for( contact in $data.LocationInfo.Contact) {
-        listItem = document.createElement('li');  
-        listItem.innerHTML = `${contact}: ${$data.LocationInfo.Contact[contact]}`; 
-        $el.querySelector('#contact_info').append(listItem);   
-    }
-    responsesDOM.push($el); 
+  for (contact in $data.LocationInfo.Contact) {
+    listItem = document.createElement("li");
+    listItem.innerHTML = `${contact}: ${$data.LocationInfo.Contact[contact]}`;
+    $el.querySelector("#contact_info").append(listItem);
+  }
+  responsesDOM.push($el);
 }
 
-
 /**
- * 
- * @param {string} $data encoded JSON string 
+ *
+ * @param {string} $data encoded JSON string
  * @return {array} hotel list
  */
-function fetch_hotel_list($data){ 
-    $data = $data || {}; 
-    //we assume that all the inputs are 
-    // JSON encoded string  
-    let data  = JSON.parse($data); 
-    return data.GetHotelAvailRS.HotelAvailInfos.HotelAvailInfo; 
+function fetch_hotel_list($data) {
+  $data = $data || {};
+  //we assume that all the inputs are
+  // JSON encoded string
+  let data = JSON.parse($data);
+  return data.GetHotelAvailRS.HotelAvailInfos.HotelAvailInfo;
 }
 
 async function get_hotel_list() {
-
-    await axios({
-      url: "./ajax.php",
-      data: {
-        hotel: "getHotel",
-      },
-      method: "POST",
+  await axios({
+    url: "./ajax.php",
+    data: {
+      hotel: "getHotel",
+    },
+    method: "POST",
+  })
+    .then((response) => {
+      localStorage.setItem("result", response.data);
+      display_result(response.data);
     })
-      .then((response) => {
-        localStorage.setItem("result", response.data);
-        display_result(response.data); 
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-    axios({
-      url: "./ajax.php",
-      data: {
-        hotel: "getHotel",
-      },
-      method: "POST",
+    .catch((err) => {
+      console.log(err);
+    });
+  axios({
+    url: "./ajax.php",
+    data: {
+      hotel: "getHotel",
+    },
+    method: "POST",
+  })
+    .then((response) => {
+      localStorage.setItem("result", response.data);
     })
-      .then((response) => {
-        localStorage.setItem("result", response.data);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-
-
+    .catch((err) => {
+      console.log(err);
+    });
 }
 
 hotelButton.addEventListener("click", get_hotel_list);
