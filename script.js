@@ -24,10 +24,11 @@ function display_result($data) {
      * if there is a responses then 
      * we need to empty the array for the 
      * new response 
-     */
+     */ 
+    
     if( responsesDOM.length > 0 )
       responsesDOM = []; 
-      
+
     hotelList.map( hotel => {
         _prepare_list(hotel.HotelInfo);  
     }); 
