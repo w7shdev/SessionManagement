@@ -92,19 +92,6 @@ async function get_hotel_list() {
     .catch((err) => {
       console.log(err);
     });
-  axios({
-    url: "./ajax.php",
-    data: {
-      hotel: "getHotel",
-    },
-    method: "POST",
-  })
-    .then((response) => {
-      localStorage.setItem("result", response.data);
-    })
-    .catch((err) => {
-      console.log(err);
-    });
 }
 
 hotelButton.addEventListener("click", get_hotel_list);
