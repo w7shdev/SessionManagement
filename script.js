@@ -19,7 +19,15 @@ function display_result($data) {
   
     console.log(`Total hotel list is ${hotelList.length}`); 
 
-    trace = hotelList[0].HotelInfo; 
+    
+    /**
+     * if there is a responses then 
+     * we need to empty the array for the 
+     * new response 
+     */
+    if( responsesDOM.length > 0 )
+      responsesDOM = []; 
+      
     hotelList.map( hotel => {
         _prepare_list(hotel.HotelInfo);  
     }); 
@@ -32,7 +40,11 @@ function display_result($data) {
 
 
 let responsesDOM = []; 
-
+/**
+ * 
+ * @param {object} $data HotelInfo object from a sabre response 
+ * @returns void 
+ */
 function _prepare_list($data) { 
     let $el = hotelListDOM.cloneNode(true); 
     $el.querySelector('#hotel_title').innerHTML = $data.HotelName; 
