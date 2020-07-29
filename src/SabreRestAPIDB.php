@@ -4,6 +4,7 @@
  *  Token with the Sync_token
  */
 namespace SessionSync; 
+use SessionSync\SabreRestAPI; 
 
 class SabreRestAPIDB  { 
 
@@ -42,7 +43,7 @@ class SabreRestAPIDB  {
         
     }
     /**
-     * Close DB conenciton 
+     * Close DB connections 
      * @return void
      */
     private function down(){ 
@@ -50,6 +51,17 @@ class SabreRestAPIDB  {
         $this->connection_state = FALSE; 
     }
 
+    /**
+     * create a session token in DB and 
+     * reutrn the session token for use 
+     * 
+     * @return \string authrized token session
+     */
+    public function create_session(){
+        $api = new SabreRestAPIDB(); 
+        $this->insert_session($api->get_token_session()); 
+        return $api->get_token_session();  
+    }
 
     /**
      * Insert Sabre seesion Token into DB
@@ -57,7 +69,7 @@ class SabreRestAPIDB  {
      *      session token from sabre response
      * @return void
      */
-    public function insert_session($session_token) { 
+    private function insert_session($session_token) { 
         if($this->connection_state) { 
             $insert = $this->query->prepare("
             INSERT INTO session (session_token,expires_in)
@@ -88,6 +100,7 @@ class SabreRestAPIDB  {
             }
         }
 
+        $query->close();
         return $result;
     }
 
