@@ -14,9 +14,13 @@ function display_result($data) {
 
     //Hide the block first  
     responseBlock.classList.remove('d-none');
+    let hotelList; 
 
-    let hotelList  = fetch_hotel_list(localStorage.getItem('result')); 
-  
+    if(!$data)
+      hotelList = fetch_hotel_list(localStorage.getItem('result')); 
+    else 
+      hotelList = fetch_hotel_list($data); 
+
     console.log(`Total hotel list is ${hotelList.length}`); 
 
     
@@ -118,4 +122,5 @@ async function get_hotel_list() {
 
 }
 
-hotelButton.addEventListener("click", get_hotel_list);
+// this will fire the ajax request 
+// hotelButton.addEventListener("click", get_hotel_list);
