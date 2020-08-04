@@ -104,7 +104,7 @@ class SabreRestAPI {
         //set the body
         $body = json_encode('grant_type=client_credentials');
         
-        $request = $this->clinet->request('POST', 'v2/auth/token', [
+        $request = $clinet->request('POST', 'v2/auth/token', [
             'headers' => $headerRequest, 
             'body'=> 'grant_type=client_credentials'
         ]);
