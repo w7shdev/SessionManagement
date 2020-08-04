@@ -4,9 +4,11 @@ use Ratchet\MessageComponentInterface;
 use Ratchet\ConnectionInterface;
 // use GuzzleHttp\Client;
 use SessionSync\SabreRestAPI; 
+use SessionSync\SabreHotelAvail;
 
 ## TODO check the auto loading PSR-4 
 require_once(dirname(__DIR__) .'../vendor/autoload.php'); 
+require_once(dirname(__DIR__) .'/src/SabreHotelAvail.php'); 
 
 
 class SabreSession implements MessageComponentInterface {
@@ -53,8 +55,9 @@ class SabreSession implements MessageComponentInterface {
        
         if($response->getHotel) { 
             $this->start_session(); 
-            // $response = $this->get_hotel_list(); 
-            // $this->send($response->getBody()->getContents()); 
+            
+          $from->send($this->get_hotel_list()); 
+
             $this->close_session(); 
         }
     }
@@ -77,8 +80,9 @@ class SabreSession implements MessageComponentInterface {
      * @return \Object client response 
      */
     private function get_hotel_list(){ 
-        $this->sabreApi->set_access_token($this->token_session); 
-        // return $this->sabreApi->fetch_hotel();
+        $hotelAvail = new SabreHotelAvail();
+
+        return $hotelAvail->get_response(); 
     }
     protected function list_session_tokens(){ 
         foreach(self::$tokens as $token_key => $token) {
