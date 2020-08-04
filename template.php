@@ -34,7 +34,7 @@
       <div class="overflow-auto bg-light mb-2" style="height: 300px;">
         <code>
           <pre>  
-                    <?php print_r($request_json); ?> 
+            <?php print_r($request_json); ?> 
         </pre>  
         </code>
       </div>
@@ -83,14 +83,24 @@
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script src="script.js"></script>
     <script type="text/javascript">
-      var conn = new WebSocket("ws://localhost:8080");
-      conn.onopen = function (e) {
-        // console.log("Connection established!");
-        console.log(e);
-      };
+
+      let getHotelBtn = document.querySelector('#getHotelBtn'); 
+      const conn = new WebSocket("ws://localhost:8080");
+      
+      function getResult(){ 
+
+        conn.send(JSON.stringify({
+          getHotel: true
+        })); 
+      }
+
+      getHotelBtn.addEventListener('click' , getResult); 
 
       conn.onmessage = function (e) {
         console.log(e.data);
+        if(e.data  != '' ) { 
+          display_result(e.data); 
+        }
       };
     </script>
   </body>

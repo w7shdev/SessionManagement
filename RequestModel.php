@@ -4,6 +4,9 @@
  * rendering the JSON file  
  * and update the control input 
  */
+global $request_json; 
+global $hotel_avail_route; 
+
 $schema_content = file_get_contents('./src/getHotelAvail.json'); 
 $request_json = json_decode($schema_content , true); 
 

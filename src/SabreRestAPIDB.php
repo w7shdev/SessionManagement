@@ -4,6 +4,7 @@
  *  Token with the Sync_token
  */
 namespace SessionSync; 
+use SessionSync\SabreRestAPI; 
 
 class SabreRestAPIDB  { 
 
@@ -23,14 +24,13 @@ class SabreRestAPIDB  {
      */
     const EXPIRE_IN = 604800; 
 
-
     public function __construct(){ 
         $this->up(); 
     } 
 
     /**
      * start DB connectin 
-     * @return void
+     * @return \void
      */
     private function up(){ 
         try { 
@@ -42,52 +42,69 @@ class SabreRestAPIDB  {
         
     }
     /**
-     * Close DB conenciton 
-     * @return void
+     * Close DB connections 
+     * @return \void
      */
     private function down(){ 
         $this->query->close(); 
         $this->connection_state = FALSE; 
     }
 
+    /**
+     * create a session token in DB and 
+     * reutrn the session token for use 
+     * 
+     * @return \string authrized token session
+     */
+    public function create_session(){
+        $api = new SabreRestAPI(); 
+        $this->insert_session($api->get_token_session()); 
+        return $api->get_token_session();  
+    }
 
     /**
      * Insert Sabre seesion Token into DB
-     * @param string $session_token 
+     * @param \string $session_token 
      *      session token from sabre response
-     * @return void
+     * @return \void
      */
-    public function insert_session($session_token) { 
+    private function insert_session($session_token) { 
         if($this->connection_state) { 
-            $insert = $this->query->prepare("
-            INSERT INTO session (session_token,expires_in)
-            VALUES (? , ?)
-            "); 
+            $query = $this->query->prepare("INSERT INTO
+            session (session_token,expire_in)
+            VALUES (?,?); 
+            ");
 
-            $insert->bind_param('s' , $session_token); 
-            $insert->bind_param('i', self::EXPIRE_IN); 
+            if(!$query) { 
+                echo $this->query->error; 
+            }
 
-            $insert->execute();
+            $query->bind_param('si' , $session_token , $expires );
+            
+            $expires = self::EXPIRE_IN; 
+
+            $query->execute();
         }
     }
 
     /**
      * get the rows of the valid Sabre session 
      * 
-     * @return mixed array | table rows 
+     * @return \mixed array | table rows 
      */
     public function get_valid_tokens() { 
         
         $result = []; 
 
         if($this->connection_state) {
-            $query = $this->query->query("SELECT * FROM valid_session"); 
+            $query = $this->query->query("SELECT * FROM vaild_session_table_1 "); 
             // get the values 
             while($row = $query->fetch_assoc()){ 
                 $result[] = $row; 
             }
         }
 
+        $query->close();
         return $result;
     }
 

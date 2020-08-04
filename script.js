@@ -7,14 +7,39 @@ let hotelListDOM = document.querySelector(".hotelList");
  * @param {array} $data hotel object of rhe response
  *
  */
-function display_result($data) {
-  // create a DOM
-  $data = $data || {};
 
-  //Hide the block first
-  responseBlock.classList.remove("d-none");
+function display_result($data) { 
+    // create a DOM 
+    $data  = $data || {}; 
 
-  let hotelList = fetch_hotel_list(localStorage.getItem("result"));
+    //Hide the block first  
+    responseBlock.classList.remove('d-none');
+    let hotelList; 
+
+    if(!$data)
+      hotelList = fetch_hotel_list(localStorage.getItem('result')); 
+    else 
+      hotelList = fetch_hotel_list($data); 
+
+    console.log(`Total hotel list is ${hotelList.length}`); 
+
+    
+    /**
+     * if there is a responses then 
+     * we need to empty the array for the 
+     * new response 
+     */
+    if( responsesDOM.length > 0 )
+      responsesDOM = []; 
+      
+    hotelList.map( hotel => {
+        _prepare_list(hotel.HotelInfo);  
+    }); 
+
+    let content  = responsesDOM.map((el) => el.innerHTML); 
+
+    responseBlock.innerHTML =content.join(' '); 
+}
 
   /**
    * if there is a responses then
@@ -94,4 +119,5 @@ async function get_hotel_list() {
     });
 }
 
-hotelButton.addEventListener("click", get_hotel_list);
+// this will fire the ajax request 
+// hotelButton.addEventListener("click", get_hotel_list);

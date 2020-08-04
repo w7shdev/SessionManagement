@@ -1,4 +1,7 @@
 <?php
+require_once(dirname(__DIR__).'../src/SabreRestAPI.php'); 
+require_once(dirname(__DIR__).'../src/SabreRestAPIDB.php'); 
+require_once(dirname(__DIR__).'../src/SabreHotelAvail.php'); 
 require_once(dirname(__DIR__).'../src/SabreSession.php'); 
 
 use Ratchet\Server\IoServer;
