@@ -14,7 +14,7 @@ open the site in your browser.
 
 ### SQL sample
 
-__databate table is similar to this__ 
+__database table is similar to this__ 
 ```SQL
 
 CREATE TABLE `session` (
