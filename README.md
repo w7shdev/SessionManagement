@@ -27,6 +27,7 @@ CREATE TABLE `session` (
 *You can use this query to create a view* 
 
 ```SQL 
+CREATE VIEW as
 SELECT
     `session_id` AS `session_id`,
     `session_token` AS `session_token`,
